@@ -64,30 +64,39 @@ struct TaskRowView: View {
 
             PriorityIcon(priority: task.priority)
 
-            Text(task.identifier)
-                .font(.caption.weight(.medium).monospaced())
+            VStack(alignment: .leading, spacing: 3) {
+                Text(task.title)
+                    .lineLimit(1)
+                    .strikethrough(task.status == .done, color: .secondary)
+                    .foregroundStyle(task.status == .done ? .secondary : .primary)
+                    .layoutPriority(1)
+                HStack(spacing: 8) {
+                    Text(task.identifier)
+                        .font(.caption.weight(.medium).monospaced())
+                    if let subs = task.subtasks, !subs.isEmpty {
+                        Label("\(task.completedSubtaskCount)/\(subs.count)", systemImage: "checklist")
+                            .font(.caption)
+                    }
+                    if let due = task.dueDate {
+                        Text(due.formatted(.dateTime.month(.abbreviated).day()))
+                            .font(.caption)
+                            .foregroundStyle(task.isOverdue ? .red : .secondary)
+                    }
+                }
                 .foregroundStyle(.secondary)
-                .frame(width: 64, alignment: .leading)
-
-            Text(task.title)
-                .lineLimit(1)
-                .strikethrough(task.status == .done, color: .secondary)
-                .foregroundStyle(task.status == .done ? .secondary : .primary)
-
-            Spacer()
-
-            HStack(spacing: 4) {
-                ForEach(task.labels.prefix(2), id: \.self) { LabelChip(text: $0) }
             }
-            if let subs = task.subtasks, !subs.isEmpty {
-                Label("\(task.completedSubtaskCount)/\(subs.count)", systemImage: "checklist")
-                    .font(.caption).foregroundStyle(.secondary)
-            }
-            if let due = task.dueDate {
-                Text(due.formatted(.dateTime.month(.abbreviated).day()))
-                    .font(.caption)
-                    .foregroundStyle(task.isOverdue ? .red : .secondary)
-                    .frame(width: 52, alignment: .trailing)
+
+            Spacer(minLength: 8)
+
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 4) {
+                    ForEach(task.labels.prefix(2), id: \.self) { LabelChip(text: $0) }
+                }
+                .fixedSize()
+                if let first = task.labels.first {
+                    LabelChip(text: first).fixedSize()
+                }
+                Color.clear.frame(width: 0, height: 0)
             }
         }
         .padding(.vertical, 2)
