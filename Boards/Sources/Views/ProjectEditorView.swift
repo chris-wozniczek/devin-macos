@@ -14,7 +14,6 @@ struct ProjectEditorView: View {
     @State private var summary: String
     @State private var color: ProjectColor
     @State private var icon: String
-    @State private var keyEdited = false
     @FocusState private var nameFocused: Bool
 
     private static let icons = [
@@ -31,7 +30,6 @@ struct ProjectEditorView: View {
         _summary = State(initialValue: project?.summary ?? "")
         _color = State(initialValue: project?.color ?? .indigo)
         _icon = State(initialValue: project?.icon ?? "folder.fill")
-        _keyEdited = State(initialValue: project != nil)
     }
 
     private var canSave: Bool {
@@ -55,8 +53,10 @@ struct ProjectEditorView: View {
                             TextField("Project name", text: $name)
                                 .font(.title3.weight(.semibold))
                                 .focused($nameFocused)
-                                .onChange(of: name) { _, new in
-                                    if !keyEdited { key = Project.makeKey(from: new) }
+                                .onChange(of: name) { old, new in
+                                    if project == nil, key == Project.makeKey(from: old) {
+                                        key = Project.makeKey(from: new)
+                                    }
                                 }
                             TextField("Summary", text: $summary)
                                 .font(.subheadline)
@@ -79,7 +79,6 @@ struct ProjectEditorView: View {
                             #endif
                             .frame(maxWidth: 100)
                             .onChange(of: key) { _, new in
-                                keyEdited = true
                                 let cleaned = String(new.uppercased().filter(\.isLetter).prefix(5))
                                 if cleaned != new { key = cleaned }
                             }

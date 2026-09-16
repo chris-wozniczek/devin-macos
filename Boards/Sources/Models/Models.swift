@@ -146,6 +146,7 @@ final class Project {
 
     static func makeKey(from name: String) -> String {
         let words = name.split(separator: " ").filter { !$0.isEmpty }
+        guard !words.isEmpty else { return "" }
         let initials = words.prefix(3).compactMap { $0.first }.map { String($0).uppercased() }.joined()
         if initials.count >= 2 { return initials }
         return String(name.uppercased().filter(\.isLetter).prefix(3)).padding(toLength: max(2, min(3, name.count)), withPad: "X", startingAt: 0)
