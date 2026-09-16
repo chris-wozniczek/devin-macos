@@ -46,7 +46,8 @@ struct BoardGridView: View {
                             let coordinate = Coordinate(row: row, col: col)
                             CellView(mark: mark(coordinate), size: cell, highlighted: highlight == coordinate)
                                 .contentShape(Rectangle())
-                                .onTapGesture { if interactive { onTap?(coordinate) } }
+                                .allowsHitTesting(interactive)
+                                .onTapGesture { onTap?(coordinate) }
                         }
                     }
                 }
