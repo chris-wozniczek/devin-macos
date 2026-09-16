@@ -143,12 +143,14 @@ struct BattleView: View {
                     BoardGridView(mark: controller.myBoard.ownMark, highlight: controller.lastEnemyShot,
                                   showLabels: false, interactive: false)
                         .frame(width: 118, height: 118)
+                        .allowsHitTesting(false)
                         .clipShape(RoundedRectangle(cornerRadius: 6))
                         .overlay { RoundedRectangle(cornerRadius: 6).strokeBorder(Theme.khaki.opacity(0.4)) }
                     Text("YOUR FLEET")
                         .font(.stencil(10)).kerning(1)
                         .foregroundStyle(Theme.khaki)
                 }
+                .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
 
