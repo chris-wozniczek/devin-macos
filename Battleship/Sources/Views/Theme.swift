@@ -100,9 +100,11 @@ struct CommandButton: View {
                 Text(title.uppercased())
                     .font(.stencil(15))
                     .kerning(1.8)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
             }
             .padding(.vertical, 14)
-            .padding(.horizontal, 22)
+            .padding(.horizontal, 16)
             .frame(maxWidth: fullWidth ? .infinity : nil)
             .foregroundStyle(foreground)
             .background {
