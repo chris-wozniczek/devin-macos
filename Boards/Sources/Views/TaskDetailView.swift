@@ -135,6 +135,7 @@ struct TaskDetailView: View {
             }
             TextField("Add", text: $newLabel)
                 .textFieldStyle(.plain)
+                .autocorrectionDisabled()
                 .font(.caption)
                 .frame(width: 70)
                 .onSubmit(addLabel)

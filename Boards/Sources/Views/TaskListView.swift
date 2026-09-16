@@ -83,6 +83,8 @@ struct TaskRowView: View {
                             .foregroundStyle(task.isOverdue ? .red : .secondary)
                     }
                 }
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
                 .foregroundStyle(.secondary)
             }
 

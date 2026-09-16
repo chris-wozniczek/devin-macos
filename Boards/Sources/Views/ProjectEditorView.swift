@@ -74,6 +74,7 @@ struct ProjectEditorView: View {
                             .multilineTextAlignment(.trailing)
                             .font(.body.monospaced())
                             .textCase(.uppercase)
+                            .autocorrectionDisabled()
                             #if os(iOS)
                             .textInputAutocapitalization(.characters)
                             #endif

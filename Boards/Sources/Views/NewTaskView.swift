@@ -63,6 +63,7 @@ struct NewTaskView: View {
                         }
                     }
                     TextField("Add label and press return", text: $newLabel)
+                        .autocorrectionDisabled()
                         .onSubmit {
                             let l = newLabel.trimmingCharacters(in: .whitespaces).lowercased()
                             if !l.isEmpty, !labels.contains(l) { labels.append(l) }
