@@ -74,8 +74,11 @@ struct TaskRowView: View {
                     Text(task.identifier)
                         .font(.caption.weight(.medium).monospaced())
                     if let subs = task.subtasks, !subs.isEmpty {
-                        Label("\(task.completedSubtaskCount)/\(subs.count)", systemImage: "checklist")
-                            .font(.caption)
+                        HStack(spacing: 3) {
+                            Image(systemName: "checklist")
+                            Text("\(task.completedSubtaskCount)/\(subs.count)")
+                        }
+                        .font(.caption)
                     }
                     if let due = task.dueDate {
                         Text(due.formatted(.dateTime.month(.abbreviated).day()))
