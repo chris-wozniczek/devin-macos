@@ -1,0 +1,109 @@
+import SwiftData
+import SwiftUI
+
+struct TaskListView: View {
+    let tasks: [TaskItem]
+    let onSelect: (TaskItem) -> Void
+    let onCompose: (TaskStatus) -> Void
+
+    var body: some View {
+        List {
+            ForEach(TaskStatus.allCases) { status in
+                let rows = tasks.filter { $0.status == status }
+                Section {
+                    ForEach(rows) { task in
+                        TaskRowView(task: task)
+                            .contentShape(Rectangle())
+                            .onTapGesture { onSelect(task) }
+                            .contextMenu { TaskContextMenu(task: task) }
+                    }
+                    if rows.isEmpty {
+                        Text("No tasks")
+                            .font(.subheadline)
+                            .foregroundStyle(.tertiary)
+                    }
+                } header: {
+                    HStack(spacing: 8) {
+                        Image(systemName: status.symbol).foregroundStyle(status.tint)
+                        Text(status.title)
+                        Text("\(rows.count)").foregroundStyle(.secondary)
+                        Spacer()
+                        Button { onCompose(status) } label: {
+                            Image(systemName: "plus").font(.system(size: 11, weight: .semibold))
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(.secondary)
+                    }
+                    .textCase(nil)
+                }
+            }
+        }
+        #if os(macOS)
+        .listStyle(.inset)
+        .alternatingRowBackgrounds()
+        #else
+        .listStyle(.insetGrouped)
+        #endif
+        .scrollContentBackground(.hidden)
+    }
+}
+
+struct TaskRowView: View {
+    @Bindable var task: TaskItem
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Button {
+                withAnimation(.snappy) { task.status = task.status == .done ? .todo : .done }
+            } label: {
+                Image(systemName: task.status == .done ? "checkmark.circle.fill" : "circle")
+                    .font(.system(size: 18))
+                    .foregroundStyle(task.status == .done ? TaskStatus.done.tint : .secondary)
+            }
+            .buttonStyle(.plain)
+
+            PriorityIcon(priority: task.priority)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(task.title)
+                    .lineLimit(1)
+                    .strikethrough(task.status == .done, color: .secondary)
+                    .foregroundStyle(task.status == .done ? .secondary : .primary)
+                    .layoutPriority(1)
+                HStack(spacing: 8) {
+                    Text(task.identifier)
+                        .font(.caption.weight(.medium).monospaced())
+                    if let subs = task.subtasks, !subs.isEmpty {
+                        HStack(spacing: 3) {
+                            Image(systemName: "checklist")
+                            Text("\(task.completedSubtaskCount)/\(subs.count)")
+                        }
+                        .font(.caption)
+                    }
+                    if let due = task.dueDate {
+                        Text(due.formatted(.dateTime.month(.abbreviated).day()))
+                            .font(.caption)
+                            .foregroundStyle(task.isOverdue ? .red : .secondary)
+                    }
+                }
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)
+                .foregroundStyle(.secondary)
+            }
+
+            Spacer(minLength: 8)
+
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 4) {
+                    ForEach(task.labels.prefix(2), id: \.self) { LabelChip(text: $0) }
+                }
+                .fixedSize()
+                if let first = task.labels.first {
+                    LabelChip(text: first).fixedSize()
+                }
+                Color.clear.frame(width: 0, height: 0)
+            }
+        }
+        .padding(.vertical, 2)
+    }
+}
